@@ -1,0 +1,61 @@
+name: build
+
+on:
+  push:
+    branches: [ test, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      max-parallel: 2
+      fail-fast: false
+      matrix:
+#        php: [7.4, 8.0]
+        php: [7.4]
+        experimental: [false]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP Action
+        uses: shivammathur/setup-php@2.16.0
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies with Composer
+        uses: ramsey/composer-install@v2
+
+      - name: Prepare Laravel Application
+        run: |
+          cp .env.testing .env
+          php artisan key:generate
+
+      - name: Run PHPUnit coverage
+        run: composer test
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Codecov
+        uses: codecov/codecov-action@v2.1.0
+        with:
+
+#          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          verbose: true
+          fail_ci_if_error: true
