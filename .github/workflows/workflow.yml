@@ -45,7 +45,6 @@ jobs:
         run: |
           cp .env.testing .env
           php artisan key:generate
-          php artisan migrate
 
       - name: Run PHPUnit coverage
         run: composer test
