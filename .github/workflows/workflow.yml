@@ -39,13 +39,10 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install dependencies with Composer
-        uses: ramsey/composer-install@v1
-#
-#      - name: Run unit tests
-#        run: php vendor/bin/codecept run
+        uses: ramsey/composer-install@v2
 
-      - name: Run Codecept coverage
-        run: php vendor/bin/codecept run --coverage --coverage-xml --coverage-phpunit
+      - name: Run PHPUnit coverage
+        run: composer test
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
