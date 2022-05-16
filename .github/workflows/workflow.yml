@@ -42,10 +42,10 @@ jobs:
         uses: ramsey/composer-install@v2
 
       - name: Prepare Laravel Application
-          run: |
-            cp .env.testing .env
-            php artisan key:generate
-            php artisan migrate
+        run: |
+          cp .env.testing .env
+          php artisan key:generate
+          php artisan migrate
 
       - name: Run PHPUnit coverage
         run: composer test
